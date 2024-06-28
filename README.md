@@ -30,7 +30,7 @@ ansible-playbook setup_cron_gaianet.yml
 Note: 
 - When prompted for `subdomain` enter the Gaianet node’s subdomain, e.g. `https://0x91e88fea19bc2d6abd578fb9d87da53f49a10831.us.gaianet.network`
 - When prompted for `message` enter the message to be sent, e.g. `Where is Paris?`
-- prompt "interval_timer_minute" with the subdomain network of gaianet node `2` minutes
+- prompt `interval_timer_minute` with the subdomain network of gaianet node `2` minutes
 <img width="1365" alt="image" src="https://github.com/nuttanont/gaianet-chat/assets/5306857/24dadafd-c160-4c90-bc16-0364aadf5a38">
 <img width="1192" alt="image" src="https://github.com/nuttanont/gaianet-chat/assets/5306857/91e2d03b-d9a4-47f8-ab94-8aaded251f09">
 
