@@ -1,0 +1,9 @@
+---
+- name: Uninstall cron job for endpoint
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Cancel cron job if it exists
+      cron:
+        name: "gaianet-chat-job"
+        state: absent

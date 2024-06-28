@@ -1,0 +1,59 @@
+---
+- name: Setup cron job for chat with Gaianet node
+  hosts: localhost
+  become: yes
+  vars_prompt:
+    - name: subdomain
+      prompt: "Enter your subdomain"
+      private: false
+    - name: message
+      prompt: "Enter your message"
+      private: false
+    - name: interval_timer_minute
+      prompt: "Enter the interval in minutes"
+      private: false
+  vars:
+    endpoint: "{{ subdomain }}/v1/chat/completions"
+    message_request: |
+      {
+          "model": "Phi-3-mini-4k-instruct",
+          "messages": [
+              {
+                  "role": "user",
+                  "content": "{{ message }}"
+              }
+          ],
+          "stream": true,
+          "stream_options": {
+              "include_usage": true
+          }
+      }
+    directory_path : "/root/gaianet-chat" 
+    response_file: "/root/gaianet-chat/gaianet_chat.log"
+    command_to_run: |
+      curl -X POST -H 'Content-Type: application/json' -d '{{ message_request | to_json }}' {{ endpoint }} >> {{ response_file }} 2>&1;
+  tasks:
+    - name: Test endpoint with curl
+      command: "curl -X POST -H 'Content-Type: application/json' -d '{{ message_request | to_json }}' {{ endpoint }}"
+      register: curl_test
+      ignore_errors: true
+
+    - name: Create output directory if it doesn't exist
+      file:
+        path: "{{ directory_path }}"
+        state: directory
+
+    - name: Create output file gaianet_chat.log
+      file:
+        path: "{{ response_file }}"
+        state: touch
+
+    - name: Debug curl test result
+      debug:
+        msg: "Endpoint test returned HTTP status code: \n {{ curl_test.stdout }}"
+
+    - name: Ensure cron job is present
+      cron:
+        name: "gaianet-chat-job"
+        minute: "*/{{ interval_timer_minute }}"
+        job: "{{ command_to_run }}"
