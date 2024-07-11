@@ -12,6 +12,9 @@
     - name: interval_timer_minute
       prompt: "Enter the interval in minutes"
       private: false
+    - name: job_name
+      prompt: "Enter job name"
+      private: false
   vars:
     endpoint: "{{ subdomain }}/v1/chat/completions"
     message_request: |
@@ -28,8 +31,8 @@
               "include_usage": true
           }
       }
-    directory_path : "/root/gaianet-chat" 
-    response_file: "/root/gaianet-chat/gaianet_chat.log"
+    directory_path: "/root/gaianet-chat"
+    response_file: "/root/gaianet-chat/gaianet_chat-{{ job_name }}.log"
     command_to_run: |
       curl -X POST -H 'Content-Type: application/json' -d '{{ message_request | to_json }}' {{ endpoint }} >> {{ response_file }} 2>&1;
   tasks:
@@ -54,6 +57,6 @@
 
     - name: Ensure cron job is present
       cron:
-        name: "gaianet-chat-job"
+        name: "{{ job_name }}"
         minute: "*/{{ interval_timer_minute }}"
         job: "{{ command_to_run }}"

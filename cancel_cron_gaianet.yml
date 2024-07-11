@@ -3,7 +3,19 @@
   hosts: localhost
   become: yes
   tasks:
-    - name: Cancel cron job if it exists
+    - name: Ensure backup directory exists
+      file:
+        path: /root/gaianet-chat
+        state: directory
+        mode: '0755'
+
+   - name: Backup the crontab
+      shell: |
+        timestamp=$(date +"%Y%m%d-%H%M%S")
+        crontab -l > /root/gaianet-chat/crontab-backup-${timestamp}.txt
+      ignore_errors: true
+
+    - name: Remove all crontab jobs
       cron:
-        name: "gaianet-chat-job"
+        name: '*'
         state: absent
